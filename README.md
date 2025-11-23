@@ -1,1 +1,1 @@
-# AI_Dropout_Prediction_and_Counselling_System
+# AI-Dropout-Prediction-and-Counselling-System
