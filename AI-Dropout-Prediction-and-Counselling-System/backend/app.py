@@ -228,37 +228,43 @@ def predict_risk():
 
 # --- EMAIL ENDPOINT ---
 @app.route('/send_email', methods=['POST'])
-def send_email_route():
+def send_email():
     try:
         data = request.json
         student_email = data.get('student_email')
         subject = data.get('subject')
-        message_body = data.get('message')
+        message = data.get('message')
 
         if not student_email:
-            return jsonify({'error': 'Student email is missing'}), 400
+            return jsonify({'error': 'Student email missing'}), 400
 
-        # Setup Email
-        msg = MIMEMultipart()
-        msg['From'] = SENDER_EMAIL
-        msg['To'] = student_email
-        msg['Subject'] = subject
+        RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
+        if not RESEND_API_KEY:
+            return jsonify({'error': 'RESEND_API_KEY missing'}), 500
 
-        msg.attach(MIMEText(message_body, 'plain'))
+        response = requests.post(
+            "https://api.resend.com/emails",
+            headers={
+                "Authorization": f"Bearer {RESEND_API_KEY}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "from": "Sentinel AI <onboarding@resend.dev>",
+                "to": [student_email],
+                "subject": subject,
+                "text": message
+            }
+        )
 
-        # Connect to Gmail Server
-        server = smtplib.SMTP('smtp.gmail.com', 587)
-        server.starttls()
-        server.login(SENDER_EMAIL, SENDER_PASSWORD)
-        text = msg.as_string()
-        server.sendmail(SENDER_EMAIL, student_email, text)
-        server.quit()
+        if response.status_code in [200, 201]:
+            return jsonify({"status": "success"})
 
-        print(f"✅ Email sent to {student_email}")
-        return jsonify({'status': 'success'})
+        return jsonify({
+            "error": "Resend API error",
+            "details": response.text
+        }), 500
 
     except Exception as e:
-        print(f"❌ Email Failed: {e}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/retrain', methods=['POST'])
@@ -334,3 +340,4 @@ def get_firebase_config():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=True)
+
