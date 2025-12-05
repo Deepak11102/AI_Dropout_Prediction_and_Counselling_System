@@ -25,14 +25,14 @@ GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 GROQ_MODEL = "llama-3.3-70b-versatile"
 
-# --- EMAIL CONFIGURATION (Resend) ---
-RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
+# --- EMAIL CONFIGURATION (Gmail SMTP) ---
+SENDER_EMAIL = os.environ.get("SENDER_EMAIL")
+SENDER_PASSWORD = os.environ.get("SENDER_EMAIL_PASSWORD")  # Gmail App Password
 
-if not GROQ_API_KEY:
-    print("⚠️ GROQ_API_KEY is not set in environment variables.")
-
-if not RESEND_API_KEY:
-    print("⚠️ RESEND_API_KEY is not set in environment variables. Email sending will fail.")
+if not SENDER_EMAIL or not SENDER_PASSWORD:
+    print("⚠️ Email credentials (SENDER_EMAIL / SENDER_EMAIL_PASSWORD) are not set.")
+else:
+    print(f"✅ Email sender configured: {SENDER_EMAIL}")
 
 # ==========================================
 # 2. FIREBASE SETUP
@@ -340,6 +340,7 @@ def get_firebase_config():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=True)
+
 
 
 
