@@ -144,9 +144,8 @@ Firebase Authentication
 ---
 
 # 🏗️ **System Architecture**
-*(Insert your diagrams here)*
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/82f71c13-45f6-4274-ac11-a2e7dd604616" />
 
----
 
 # 🏁 **Conclusion**
 This system provides:
